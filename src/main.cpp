@@ -172,6 +172,7 @@ int main()
     //Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
     Shader skyboxShader("resources/shaders/6.1.skybox.vs", "resources/shaders/6.1.skybox.fs");
     Shader podlogaShader("resources/shaders/podlogaSh.vs","resources/shaders/podlogaSh.fs");
+    Shader modelShader("resources/shaders/modelShader.vs","resources/shaders/modelShader.fs");
     // load models
     // -----------
     // soil texture
@@ -186,6 +187,7 @@ int main()
             50.0f, -1.0f, -50.0f,  2.0f, 2.0f, 0.0f, 1.0f, 0.0f,
             -50.0f, -1.0f, -50.0f,  0.0f, 2.0f, 0.0f, 1.0f, 0.0f
     };
+
     unsigned int planeVAO, planeVBO;
     glGenVertexArrays(1, &planeVAO);
     glGenBuffers(1, &planeVBO);
@@ -205,7 +207,6 @@ int main()
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
 
     glBindVertexArray(0);
-
 
     unsigned int podlogaTexture = loadTexture("resources/textures/soil.jpg");
     podlogaShader.use();
@@ -270,14 +271,14 @@ int main()
 
 
     vector<std::string> faces
-    {
-        FileSystem::getPath("resources/textures/skybox/px.jpg"),
-        FileSystem::getPath("resources/textures/skybox/nx.jpg"),
-        FileSystem::getPath("resources/textures/skybox/py.jpg"),
-        FileSystem::getPath("resources/textures/skybox/ny.jpg"),
-        FileSystem::getPath("resources/textures/skybox/pz.jpg"),
-        FileSystem::getPath("resources/textures/skybox/nz.jpg")
-    };
+            {
+                    FileSystem::getPath("resources/textures/skybox/px.jpg"),
+                    FileSystem::getPath("resources/textures/skybox/nx.jpg"),
+                    FileSystem::getPath("resources/textures/skybox/py.jpg"),
+                    FileSystem::getPath("resources/textures/skybox/ny.jpg"),
+                    FileSystem::getPath("resources/textures/skybox/pz.jpg"),
+                    FileSystem::getPath("resources/textures/skybox/nz.jpg")
+            };
     stbi_set_flip_vertically_on_load(false);
     unsigned int cubemapTexture = loadCubemap(faces);
     stbi_set_flip_vertically_on_load(true);
@@ -292,6 +293,12 @@ int main()
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 
+
+    // ucitavanje modela
+
+    Model backpack("resources/objects/bush/scene.gltf");
+
+
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(-11.0,-10.3,-11.0);
     pointLight.ambient = glm::vec3(0.1, 0.1, 0.1);
@@ -302,6 +309,7 @@ int main()
     pointLight.linear = 0.999999f;
     pointLight.quadratic = 0.999999f;
     DirLight& dirLight = programState->dirLight;
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window)) {
@@ -310,6 +318,7 @@ int main()
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+
 
         dirLight.direction = glm::vec3(-2.0f, -2.0f, 0.3f);
         dirLight.ambient = glm::vec3(0.81f, 0.81f, 0.81f);
@@ -346,8 +355,25 @@ int main()
         podlogaShader.setVec3("dirLight.specular", dirLight.specular);
         podlogaShader.setFloat("shininess", 64.0f);
 
+
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
+
+        modelShader.use();
+        // view/projection transformations
+
+        //glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        //glm::mat4 view = programState->camera.GetViewMatrix();
+        modelShader.setMat4("projection", projection);
+        modelShader.setMat4("view", view);
+
+        //glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        modelShader.setMat4("model", model);
+        backpack.Draw(modelShader);
+
+
 
         // draw skybox as last
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
@@ -378,6 +404,7 @@ int main()
     ImGui::DestroyContext();
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
+
     glfwTerminate();
     return 0;
 }

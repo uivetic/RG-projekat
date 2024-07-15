@@ -1,0 +1,11 @@
+Model Information:
+* title:	Simple Bush
+* source:	https://sketchfab.com/3d-models/simple-bush-cb91cb6149a142a8a196a268dcf36aa8
+* author:	marco.cossetti (https://sketchfab.com/marco.cossetti)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Simple Bush" (https://sketchfab.com/3d-models/simple-bush-cb91cb6149a142a8a196a268dcf36aa8) by marco.cossetti (https://sketchfab.com/marco.cossetti) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
