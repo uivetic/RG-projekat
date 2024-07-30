@@ -28,8 +28,8 @@ unsigned int loadTexture2(char const *path);
 unsigned int loadCubemap(vector<std::string> faces);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1600;
+const unsigned int SCR_HEIGHT = 1200;
 
 // camera
 float lastX = (float)SCR_WIDTH / 2.0;
@@ -296,8 +296,13 @@ int main()
 
     // ucitavanje modela
 
-    Model backpack("resources/objects/bush/scene.gltf");
-
+    Model bush("resources/objects/bush/scene.gltf");
+    Model plant("resources/objects/plant/scene.gltf");
+    Model backpack("resources/objects/backpack/backpack.obj");
+    Model oldTree("resources/objects/oldTree/scene.gltf");
+    Model log("resources/objects/log/scene.gltf");
+    Model kovac("resources/objects/blacksmith/scene.gltf");
+    Model suma("resources/objects/forest/scene.gltf");
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(-11.0,-10.3,-11.0);
@@ -362,17 +367,42 @@ int main()
         modelShader.use();
         // view/projection transformations
 
-        //glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        //glm::mat4 view = programState->camera.GetViewMatrix();
+        glm::mat4 projection1 = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 view1 = programState->camera.GetViewMatrix();
         modelShader.setMat4("projection", projection);
         modelShader.setMat4("view", view);
 
-        //glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        // Š U M A
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, -11.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(-120.0f), glm::vec3(1.0, 1.0, 1.0));
+        model = glm::scale(model, glm::vec3(6.5f, 6.5f, 6.5f));
         modelShader.setMat4("model", model);
-        backpack.Draw(modelShader);
+        suma.Draw(modelShader);
 
+        // K O V A Č
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-50.0f, -11.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0, 1.0, 1.0));
+        model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+        modelShader.setMat4("model", model);
+        kovac.Draw(modelShader);
+
+        // S T A R O   D R V O
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-50.0f, -11.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(-120.0f), glm::vec3(1.0, 1.0, 1.0));
+        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
+        modelShader.setMat4("model", model);
+        oldTree.Draw(modelShader);
+        //bush.Draw(modelShader);
+        //plant.Draw(modelShader);
+        //oldTree.Draw(modelShader);
+        //log.Draw(modelShader);
+        //kovac.Draw(modelShader);
+        // predobar!!!! ali skalirati prvo
+
+        //backpack.Draw(modelShader);
 
 
         // draw skybox as last
@@ -417,13 +447,13 @@ void processInput(GLFWwindow *window)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        programState->camera.ProcessKeyboard(FORWARD, deltaTime);
+        programState->camera.ProcessKeyboard(FORWARD, deltaTime+1);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        programState->camera.ProcessKeyboard(BACKWARD, deltaTime);
+        programState->camera.ProcessKeyboard(BACKWARD, deltaTime+1);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        programState->camera.ProcessKeyboard(LEFT, deltaTime);
+        programState->camera.ProcessKeyboard(LEFT, deltaTime+1);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        programState->camera.ProcessKeyboard(RIGHT, deltaTime);
+        programState->camera.ProcessKeyboard(RIGHT, deltaTime+1);
 }
 
 
