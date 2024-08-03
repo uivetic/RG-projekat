@@ -296,13 +296,12 @@ int main()
 
     // ucitavanje modela
 
-    Model bush("resources/objects/bush/scene.gltf");
-    Model plant("resources/objects/plant/scene.gltf");
-    Model backpack("resources/objects/backpack/backpack.obj");
-    Model oldTree("resources/objects/oldTree/scene.gltf");
-    Model log("resources/objects/log/scene.gltf");
     Model kovac("resources/objects/blacksmith/scene.gltf");
     Model suma("resources/objects/forest/scene.gltf");
+    Model kocije("resources/objects/carriage/scene.gltf");
+    Model prase("resources/objects/pig/scene.gltf");
+    Model nakovanj("resources/objects/anvil/scene.gltf");
+    Model vatra("resources/objects/fire/Campfire.obj");
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(-11.0,-10.3,-11.0);
@@ -372,6 +371,7 @@ int main()
         modelShader.setMat4("projection", projection);
         modelShader.setMat4("view", view);
 
+
         // Š U M A
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, -11.0f, 0.0f));
@@ -380,29 +380,80 @@ int main()
         modelShader.setMat4("model", model);
         suma.Draw(modelShader);
 
+
         // K O V A Č
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-50.0f, -11.0f, 0.0f));
-        model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0, 1.0, 1.0));
-        model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+        model = glm::translate(model, glm::vec3(-7.0f, -11.0f, 24.0f));
+        model = glm::rotate(model, glm::radians(-50.0f), glm::vec3(0.0, 1.0, 0.0));
+        model = glm::scale(model, glm::vec3(0.03f, 0.03f, 0.03f));
         modelShader.setMat4("model", model);
         kovac.Draw(modelShader);
 
-        // S T A R O   D R V O
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-50.0f, -11.0f, 0.0f));
-        model = glm::rotate(model, glm::radians(-120.0f), glm::vec3(1.0, 1.0, 1.0));
-        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));
-        modelShader.setMat4("model", model);
-        oldTree.Draw(modelShader);
-        //bush.Draw(modelShader);
-        //plant.Draw(modelShader);
-        //oldTree.Draw(modelShader);
-        //log.Draw(modelShader);
-        //kovac.Draw(modelShader);
-        // predobar!!!! ali skalirati prvo
 
-        //backpack.Draw(modelShader);
+
+        // K O C I J E
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-10.0f, -11.0f, 40.0f));
+        model = glm::rotate(model, glm::radians(115.0f), glm::vec3(0.0, 1.0, 0.0));
+        model = glm::scale(model, glm::vec3(2.5f, 2.5f, 2.5f));
+        modelShader.setMat4("model", model);
+        kocije.Draw(modelShader);
+
+
+        // P R A S E
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-30.0f, -8.5f, 30.0f));
+        model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0, 0.0, 1.0));
+        model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+        modelShader.setMat4("model", model);
+        prase.Draw(modelShader);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-25.0f, -9.0f, 30.0f));
+        model = glm::rotate(model, glm::radians(200.0f), glm::vec3(0.0, 0.0, 1.0));
+        model = glm::rotate(model, glm::radians(60.0f), glm::vec3(0.0, 1.0, 0.0));
+        model = glm::rotate(model, glm::radians(25.0f), glm::vec3(1.0, 0.0, 0.0));
+        model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+        modelShader.setMat4("model", model);
+        prase.Draw(modelShader);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-35.0f, -9.0f, 20.0f));
+        model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0, 0.0, 1.0));
+        model = glm::rotate(model, glm::radians(60.0f), glm::vec3(0.0, 1.0, 0.0));
+        model = glm::rotate(model, glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
+        model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+        modelShader.setMat4("model", model);
+        prase.Draw(modelShader);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-40.0f, -7.0f, 30.0f));
+        model = glm::rotate(model, glm::radians(-165.0f), glm::vec3(0.0, 0.0, 1.0));
+        model = glm::rotate(model, glm::radians(100.0f), glm::vec3(0.0, 1.0, 0.0));
+//        model = glm::rotate(model, glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
+        model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+        modelShader.setMat4("model", model);
+        prase.Draw(modelShader);
+
+        // N A K O V A Nj
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-6.0f, -11.0f, 31.0f));
+        model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0, 1.0, 1.0));
+        model = glm::scale(model, glm::vec3(0.025f, 0.025f, 0.025f));
+        modelShader.setMat4("model", model);
+        nakovanj.Draw(modelShader);
+
+
+        // V A T R A
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-12.0f, -11.0f, 25.0f));
+        model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0, 1.0, 1.0));
+        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+        modelShader.setMat4("model", model);
+        vatra.Draw(modelShader);
+
+
+
 
 
         // draw skybox as last

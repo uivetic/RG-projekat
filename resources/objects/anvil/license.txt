@@ -1,0 +1,11 @@
+Model Information:
+* title:	Asset02 Medieval Anvil
+* source:	https://sketchfab.com/3d-models/asset02-medieval-anvil-f6123f83e46345ccac727e35d91392ee
+* author:	Margot D. (https://sketchfab.com/Winterll)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Asset02 Medieval Anvil" (https://sketchfab.com/3d-models/asset02-medieval-anvil-f6123f83e46345ccac727e35d91392ee) by Margot D. (https://sketchfab.com/Winterll) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
