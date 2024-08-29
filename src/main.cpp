@@ -63,7 +63,6 @@ struct ProgramState {
     bool ImGuiEnabled = false;
     Camera camera;
     bool CameraMouseMovementUpdateEnabled = true;
-
     PointLight pointLight;
     DirLight dirLight;
     ProgramState()
@@ -72,6 +71,7 @@ struct ProgramState {
     void SaveToFile(std::string filename);
 
     void LoadFromFile(std::string filename);
+
 };
 
 void ProgramState::SaveToFile(std::string filename) {
@@ -170,6 +170,7 @@ int main()
     // build and compile shaders
     // -------------------------
     //Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
+    Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
     Shader skyboxShader("resources/shaders/6.1.skybox.vs", "resources/shaders/6.1.skybox.fs");
     Shader podlogaShader("resources/shaders/podlogaSh.vs","resources/shaders/podlogaSh.fs");
     Shader modelShader("resources/shaders/modelShader.vs","resources/shaders/modelShader.fs");
@@ -271,14 +272,14 @@ int main()
 
 
     vector<std::string> faces
-            {
-                    FileSystem::getPath("resources/textures/skybox/px.jpg"),
-                    FileSystem::getPath("resources/textures/skybox/nx.jpg"),
-                    FileSystem::getPath("resources/textures/skybox/py.jpg"),
-                    FileSystem::getPath("resources/textures/skybox/ny.jpg"),
-                    FileSystem::getPath("resources/textures/skybox/pz.jpg"),
-                    FileSystem::getPath("resources/textures/skybox/nz.jpg")
-            };
+    {
+        FileSystem::getPath("resources/textures/skybox/px.jpg"),
+        FileSystem::getPath("resources/textures/skybox/nx.jpg"),
+        FileSystem::getPath("resources/textures/skybox/py.jpg"),
+        FileSystem::getPath("resources/textures/skybox/ny.jpg"),
+        FileSystem::getPath("resources/textures/skybox/pz.jpg"),
+        FileSystem::getPath("resources/textures/skybox/nz.jpg")
+    };
     stbi_set_flip_vertically_on_load(false);
     unsigned int cubemapTexture = loadCubemap(faces);
     stbi_set_flip_vertically_on_load(true);
@@ -288,30 +289,45 @@ int main()
     skyboxShader.use();
     skyboxShader.setInt("skybox", 0);
 
+
+
+
+    // ucitavanje modela
+
+    Model kovac("resources/objects/blacksmith/scene.gltf");
+    kovac.SetShaderTextureNamePrefix("material.");
+
+    Model suma("resources/objects/forest/scene.gltf");
+    suma.SetShaderTextureNamePrefix("material.");
+
+    Model kocije("resources/objects/carriage/scene.gltf");
+    kocije.SetShaderTextureNamePrefix("material.");
+
+    Model prase("resources/objects/pig/scene.gltf");
+    prase.SetShaderTextureNamePrefix("material.");
+
+    Model nakovanj("resources/objects/anvil/scene.gltf");
+    nakovanj.SetShaderTextureNamePrefix("material.");
+
+    Model vatra("resources/objects/fire/Campfire.obj");
+    vatra.SetShaderTextureNamePrefix("material.");
+
     podlogaShader.use();
     podlogaShader.setInt("texture1", 0);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 
 
-    // ucitavanje modela
-
-    Model kovac("resources/objects/blacksmith/scene.gltf");
-    Model suma("resources/objects/forest/scene.gltf");
-    Model kocije("resources/objects/carriage/scene.gltf");
-    Model prase("resources/objects/pig/scene.gltf");
-    Model nakovanj("resources/objects/anvil/scene.gltf");
-    Model vatra("resources/objects/fire/Campfire.obj");
-
     PointLight& pointLight = programState->pointLight;
-    pointLight.position = glm::vec3(-11.0,-10.3,-11.0);
+    pointLight.position = glm::vec3(-11.5,-10.0,26.0);
     pointLight.ambient = glm::vec3(0.1, 0.1, 0.1);
-    pointLight.diffuse = glm::vec3(1.0, 1.0, 1.0);
-    pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
+    pointLight.diffuse = glm::vec3(10.0, 10.0, 10.0);
+    pointLight.specular = glm::vec3(10.0, 10.0, 10.0);
 
     pointLight.constant = 0.9f;
     pointLight.linear = 0.999999f;
     pointLight.quadratic = 0.999999f;
+
     DirLight& dirLight = programState->dirLight;
 
     // render loop
@@ -324,8 +340,8 @@ int main()
         lastFrame = currentFrame;
 
 
-        dirLight.direction = glm::vec3(-2.0f, -2.0f, 0.3f);
-        dirLight.ambient = glm::vec3(0.81f, 0.81f, 0.81f);
+        dirLight.direction = glm::vec3(30.0f, -10.0f, -11.0f);
+        dirLight.ambient = glm::vec3(1.0f, 1.0f, 1.0f);
         dirLight.diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
         dirLight.specular = glm::vec3(0.2f, 0.2f, 0.2f);
 
@@ -336,7 +352,7 @@ int main()
 
         // render
         // ------
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         podlogaShader.use();
@@ -352,24 +368,43 @@ int main()
         model = glm::translate(model, glm::vec3(0.0f, -10.0f, 0.0f));
         podlogaShader.setMat4("model", model);
 
-
         podlogaShader.setVec3("dirLight.direction", dirLight.direction);
         podlogaShader.setVec3("dirLight.ambient", dirLight.ambient);
         podlogaShader.setVec3("dirLight.diffuse", dirLight.diffuse);
         podlogaShader.setVec3("dirLight.specular", dirLight.specular);
         podlogaShader.setFloat("shininess", 64.0f);
 
-
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
-        modelShader.use();
+
+
+
+        ourShader.use();
+        // pointLight.position = glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
+        ourShader.setVec3("dirLight.direction", dirLight.direction);
+        ourShader.setVec3("dirLight.ambient", dirLight.ambient);
+        ourShader.setVec3("dirLight.diffuse", dirLight.diffuse);
+        ourShader.setVec3("dirLight.specular", dirLight.specular);
+        ourShader.setFloat("shininess", 32.0f);
+
+
+        ourShader.setVec3("pointLight.position", pointLight.position);
+        ourShader.setVec3("pointLight.ambient", pointLight.ambient);
+        ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
+        ourShader.setVec3("pointLight.specular", pointLight.specular);
+        ourShader.setFloat("pointLight.constant", pointLight.constant);
+        ourShader.setFloat("pointLight.linear", pointLight.linear);
+        ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
+        ourShader.setVec3("viewPosition", programState->camera.Position);
+        ourShader.setFloat("material.shininess", 1024.0f);
+
         // view/projection transformations
 
-        glm::mat4 projection1 = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection1 = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
         glm::mat4 view1 = programState->camera.GetViewMatrix();
-        modelShader.setMat4("projection", projection);
-        modelShader.setMat4("view", view);
+        modelShader.setMat4("projection", projection1);
+        modelShader.setMat4("view", view1);
 
 
         // Š U M A
@@ -377,8 +412,8 @@ int main()
         model = glm::translate(model, glm::vec3(0.0f, -11.0f, 0.0f));
         model = glm::rotate(model, glm::radians(-120.0f), glm::vec3(1.0, 1.0, 1.0));
         model = glm::scale(model, glm::vec3(6.5f, 6.5f, 6.5f));
-        modelShader.setMat4("model", model);
-        suma.Draw(modelShader);
+        ourShader.setMat4("model", model);
+        suma.Draw(ourShader);
 
 
         // K O V A Č
@@ -386,8 +421,8 @@ int main()
         model = glm::translate(model, glm::vec3(-7.0f, -11.0f, 24.0f));
         model = glm::rotate(model, glm::radians(-50.0f), glm::vec3(0.0, 1.0, 0.0));
         model = glm::scale(model, glm::vec3(0.03f, 0.03f, 0.03f));
-        modelShader.setMat4("model", model);
-        kovac.Draw(modelShader);
+        ourShader.setMat4("model", model);
+        kovac.Draw(ourShader);
 
 
 
@@ -396,8 +431,8 @@ int main()
         model = glm::translate(model, glm::vec3(-10.0f, -11.0f, 40.0f));
         model = glm::rotate(model, glm::radians(115.0f), glm::vec3(0.0, 1.0, 0.0));
         model = glm::scale(model, glm::vec3(2.5f, 2.5f, 2.5f));
-        modelShader.setMat4("model", model);
-        kocije.Draw(modelShader);
+        ourShader.setMat4("model", model);
+        kocije.Draw(ourShader);
 
 
         // P R A S E
@@ -405,8 +440,8 @@ int main()
         model = glm::translate(model, glm::vec3(-30.0f, -8.5f, 30.0f));
         model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0, 0.0, 1.0));
         model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-        modelShader.setMat4("model", model);
-        prase.Draw(modelShader);
+        ourShader.setMat4("model", model);
+        prase.Draw(ourShader);
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-25.0f, -9.0f, 30.0f));
@@ -414,8 +449,8 @@ int main()
         model = glm::rotate(model, glm::radians(60.0f), glm::vec3(0.0, 1.0, 0.0));
         model = glm::rotate(model, glm::radians(25.0f), glm::vec3(1.0, 0.0, 0.0));
         model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-        modelShader.setMat4("model", model);
-        prase.Draw(modelShader);
+        ourShader.setMat4("model", model);
+        prase.Draw(ourShader);
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-35.0f, -9.0f, 20.0f));
@@ -423,8 +458,8 @@ int main()
         model = glm::rotate(model, glm::radians(60.0f), glm::vec3(0.0, 1.0, 0.0));
         model = glm::rotate(model, glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
         model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-        modelShader.setMat4("model", model);
-        prase.Draw(modelShader);
+        ourShader.setMat4("model", model);
+        prase.Draw(ourShader);
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-40.0f, -7.0f, 30.0f));
@@ -432,16 +467,16 @@ int main()
         model = glm::rotate(model, glm::radians(100.0f), glm::vec3(0.0, 1.0, 0.0));
 //        model = glm::rotate(model, glm::radians(10.0f), glm::vec3(1.0, 0.0, 0.0));
         model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
-        modelShader.setMat4("model", model);
-        prase.Draw(modelShader);
+        ourShader.setMat4("model", model);
+        prase.Draw(ourShader);
 
         // N A K O V A Nj
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(-6.0f, -11.0f, 31.0f));
         model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0, 1.0, 1.0));
         model = glm::scale(model, glm::vec3(0.025f, 0.025f, 0.025f));
-        modelShader.setMat4("model", model);
-        nakovanj.Draw(modelShader);
+        ourShader.setMat4("model", model);
+        nakovanj.Draw(ourShader);
 
 
         // V A T R A
@@ -449,11 +484,14 @@ int main()
         model = glm::translate(model, glm::vec3(-12.0f, -11.0f, 25.0f));
         model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0, 1.0, 1.0));
         model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-        modelShader.setMat4("model", model);
-        vatra.Draw(modelShader);
+        ourShader.setMat4("model", model);
+        vatra.Draw(ourShader);
 
 
+        ourShader.setVec3("dirLight.direction", -1.0f*dirLight.direction);
 
+        ourShader.setFloat("shininess", 32.0f);
+        ourShader.setMat4("model", model);
 
 
         // draw skybox as last
