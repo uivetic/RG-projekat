@@ -166,7 +166,7 @@ int main()
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
-
+    glEnable(GL_MULTISAMPLE);
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -174,12 +174,14 @@ int main()
     glEnable(GL_BLEND);
     // build and compile shaders
     // -------------------------
-    //Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
     Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
     Shader skyboxShader("resources/shaders/6.1.skybox.vs", "resources/shaders/6.1.skybox.fs");
     Shader podlogaShader("resources/shaders/podlogaSh.vs","resources/shaders/podlogaSh.fs");
-    Shader modelShader("resources/shaders/modelShader.vs","resources/shaders/modelShader.fs");
+    //Shader modelShader("resources/shaders/modelShader.vs","resources/shaders/modelShader.fs");
     Shader bushShader("resources/shaders/bushShader.vs", "resources/shaders/bushShader.fs");
+    //Shader anti_aliasingShader("resources/shaders/anti_aliasingShader.vs", "resources/shaders/anti_aliasingShader.fs");
+
+
     // load models
     // -----------
     // soil texture
@@ -215,7 +217,7 @@ int main()
 
     glBindVertexArray(0);
 
-    unsigned int podlogaTexture = loadTexture2("resources/textures/soil.jpg");
+    //unsigned int podlogaTexture = loadTexture2("resources/textures/soil.jpg");
     podlogaShader.use();
     podlogaShader.setInt("texture1", 0);
     // skybox
@@ -279,12 +281,18 @@ int main()
 
     vector<std::string> faces
             {
-                    FileSystem::getPath("resources/textures/skybox/px.jpg"),
-                    FileSystem::getPath("resources/textures/skybox/nx.jpg"),
-                    FileSystem::getPath("resources/textures/skybox/py.jpg"),
-                    FileSystem::getPath("resources/textures/skybox/ny.jpg"),
-                    FileSystem::getPath("resources/textures/skybox/pz.jpg"),
-                    FileSystem::getPath("resources/textures/skybox/nz.jpg")
+//                    FileSystem::getPath("resources/textures/skybox/px.jpg"),
+//                    FileSystem::getPath("resources/textures/skybox/nx.jpg"),
+//                    FileSystem::getPath("resources/textures/skybox/py.jpg"),
+//                    FileSystem::getPath("resources/textures/skybox/ny.jpg"),
+//                    FileSystem::getPath("resources/textures/skybox/pz.jpg"),
+//                    FileSystem::getPath("resources/textures/skybox/nz.jpg")
+                    FileSystem::getPath("resources/textures/skybox/posx.jpg"),
+                    FileSystem::getPath("resources/textures/skybox/negx.jpg"),
+                    FileSystem::getPath("resources/textures/skybox/posy.jpg"),
+                    FileSystem::getPath("resources/textures/skybox/negy.jpg"),
+                    FileSystem::getPath("resources/textures/skybox/posz.jpg"),
+                    FileSystem::getPath("resources/textures/skybox/negz.jpg")
             };
     stbi_set_flip_vertically_on_load(false);
     unsigned int cubemapTexture = loadCubemap(faces);
@@ -298,9 +306,9 @@ int main()
 
     float bushVertices[] = {
             // positions          texture        normal
-            0.0f,  0.5f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-            0.0f, -0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-            1.0f, -0.5f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+            0.0f,  0.5f,  0.0f,  0.1f,  0.0f,  0.0f,  1.0f,  0.0f,
+            0.0f, -0.5f,  0.0f,  0.1f,  1.0f,  0.0f,  1.0f,  0.0f,
+            1.0f, -0.5f,  0.0f,  1.1f,  1.0f,  0.0f,  1.0f,  0.0f,
 
             0.0f,  0.5f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f,
             1.0f, -0.5f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f,
@@ -400,6 +408,8 @@ int main()
         glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+
         podlogaShader.use();
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = programState->camera.GetViewMatrix();
@@ -407,9 +417,16 @@ int main()
         podlogaShader.setMat4("view", view);
         podlogaShader.setMat4("projection", projection);
 
+        /*
+        anti_aliasingShader.use();
+        anti_aliasingShader.setMat4("projection", projection);
+        anti_aliasingShader.setMat4("view", view);
+        anti_aliasingShader.setMat4("model", glm::mat4(1.0f));
+         */
+
         glBindVertexArray(planeVAO);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, podlogaTexture);
+        //glBindTexture(GL_TEXTURE_2D, podlogaTexture);
         model = glm::translate(model, glm::vec3(0.0f, -10.0f, 0.0f));
         podlogaShader.setMat4("model", model);
 
@@ -448,8 +465,8 @@ int main()
 
         glm::mat4 projection1 = glm::perspective(glm::radians(programState->camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
         glm::mat4 view1 = programState->camera.GetViewMatrix();
-        modelShader.setMat4("projection", projection1);
-        modelShader.setMat4("view", view1);
+        ourShader.setMat4("projection", projection1);
+        ourShader.setMat4("view", view1);
 
 
         // Š U M A
@@ -712,40 +729,6 @@ unsigned int loadTexture(char const *path) {
 
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        stbi_image_free(data);
-    }
-    else {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
-        stbi_image_free(data);
-    }
-
-    return textureID;
-}
-unsigned int loadTexture2(char const *path) {
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-
-    int width, height, nrComponents;
-    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
-    if (data) {
-        GLenum format;
-        if (nrComponents == 1)
-            format = GL_RED;
-        else if (nrComponents == 3)
-            format = GL_RGB;
-        else if (nrComponents == 4)
-            format = GL_RGBA;
-
-        glBindTexture(GL_TEXTURE_2D, textureID);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, format,4000, 4000, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
